@@ -1,11 +1,18 @@
 # DON'T CHANGE THIS CODE
 # ----------------------
+
+puts "What city are you in?"
+city = gets.chomp
+city = city.gsub(" ", "")
+
 require "net/http"
 require "json"
-url = "https://weatherdbi.herokuapp.com/data/weather/chicago"
+url = "https://weatherdbi.herokuapp.com/data/weather/#{city}"
 uri = URI(url)
 response = Net::HTTP.get(uri)
 weather_data = JSON.parse(response)
+
+
 # ----------------------
 
 # EXERCISE
@@ -33,7 +40,12 @@ weather_data = JSON.parse(response)
 # Use a loop to display the daily summary for the upcoming forecast.
 
 # 1. inspect the weather_data hash
+
 # puts weather_data
+
+if 
+    weather_data["status"] == "fail"
+    puts "We don't know that city. Try again"
 
 # CHALLENGE
 # Can you display the weather forecast summary for a user-entered city?
@@ -42,3 +54,21 @@ weather_data = JSON.parse(response)
 # city = gets.chomp
 # puts city
 # Note: what happens if the user-entered value is not a known city? You'll want to do some error handling.
+
+else
+    current_temp = weather_data["currentConditions"]["temp"]["f"]
+    current_cond = weather_data["currentConditions"]["comment"]
+    todays_forecast = weather_data["next_days"][0]
+
+
+    puts "In #{weather_data["region"]} it is currently #{current_temp} and #{current_cond}"
+    puts "The rest of today will be a high of #{todays_forecast["max_temp"]["f"]} and #{todays_forecast["comment"]}"
+    puts "The upcoming weather forecast is:"
+
+   for daily_forecast_data in weather_data["next_days"]
+    day_of_week = daily_forecast_data["day"]
+    high_temp = daily_forecast_data["max_temp"]["f"]
+    conditions =  daily_forecast_data["comment"]
+    puts "#{day_of_week}: A high of #{high_temp} and #{conditions}"
+end 
+end
